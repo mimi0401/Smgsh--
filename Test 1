@@ -21,6 +21,13 @@ def 問AI(問題):
 ]
 
 for i, 問題 in enumerate(問題們):
-    print(f"📝 問題 {i+1}：{問題}")
+    print(f"問題 {i+1}：{問題}")
     回答 = 問AI(問題)
-    print(f"🤖 回答：{回答}\n")
+    print(f"AI 回答：{回答}\n")
+
+
+
+AI平台:OpenAI GPT-4 因為好取得且使用順手,回答簡單
+編成環境：Google Colab 不用安裝且快速
+推理過程與設計說明：提示使用不超過5個字寫日常的問題,較輕易觀察AI反應差異,
+其中利用python編寫腳本,再依次發送提示,最後在Google colab執行程式碼
