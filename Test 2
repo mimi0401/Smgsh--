@@ -1,0 +1,24 @@
+import openai
+import os
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+question = input("請輸入你想問 AI 的問題：")
+
+response = openai.ChatCompletion.create(
+    model="gpt-3.5-turbo",
+    messages=[
+        {"role": "user", "content": question}
+    ]
+)
+
+answer = response['choices'][0]['message']['content']
+
+print("\nAI 回答：")
+print(answer)
+
+with open("ai_回答.txt", "w", encoding="utf-8") as f:
+    f.write("你的問題：\n" + question + "\n\n")
+    f.write("AI 的回答：\n" + answer)
+
+print("\n回答已儲存成 ai_回答.txt")
