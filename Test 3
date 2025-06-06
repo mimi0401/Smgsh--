@@ -1,0 +1,25 @@
+import openai
+import os
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+questions = [
+    "請寫一篇關於全球暖化的文章。",
+    "假設你是一位高中生，寫一篇 300 字的作文，主題是「全球暖化對人類的影響」。請舉出兩個具體例子（例如環境、食物等）"
+]
+
+with open("ai_回答.txt", "w", encoding="utf-8") as f:
+    for i, question in enumerate(questions, start=1):
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": question}]
+        )
+        answer = response['choices'][0]['message']['content']
+        f.write(f"問題 {i}：\n{question}\n\n")
+        f.write(f"AI 的回答 {i}：\n{answer}\n\n")
+        print(f"問題 {i} 已完成")
+
+print("\n所有回答已儲存到 ai_回答.txt")
+
+Compared to the original vague prompt, I improved it by using a clear essay title, such as focusing only on how AI affects humans. I also asked the AI to write from the point of view of a high school student, which helped make the style more natural. 
+In addition, I set a word limit to guide the length and asked for at least two examples. These changes gave the AI a better idea of what I wanted, and the answer about global warming became more detailed, organized, and easier to understand.
