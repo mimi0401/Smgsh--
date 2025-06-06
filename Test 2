@@ -3,7 +3,7 @@ import os
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-question = input("請輸入你想問 AI 的問題：")
+question = input("今天天氣好嗎：")
 
 response = openai.ChatCompletion.create(
     model="gpt-3.5-turbo",
