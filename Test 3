@@ -3,23 +3,109 @@ import os
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-questions = [
-    "請寫一篇關於全球暖化的文章。",
-    "假設你是一位高中生，寫一篇 300 字的作文，主題是「全球暖化對人類的影響」。請舉出兩個具體例子（例如環境、食物等）"
+prompts = [
+    {
+        "title": "AI 對人類日常生活的實際影響",
+        "initial": "Write an article about AI.",
+        "refined": (
+            "You are a high school student writing a 300-word essay about how AI helps people in everyday life. "
+            "Focus on two real examples, such as AI in healthcare or in education. Use simple language."
+        )
+    },
+    {
+        "title": "全球暖化的成因與影響",
+        "initial": "Explain global warming.",
+        "refined": (
+            "Imagine you are writing a 250-word science report for your class about global warming. "
+            "Explain what global warming is, why it happens (mention greenhouse gases), and give two real-world effects such as melting ice and extreme weather. "
+            "Make sure your explanation is clear for middle school readers."
+        )
+    },
+    {
+        "title": "學生實用的時間管理技巧",
+        "initial": "Give me time management tips.",
+        "refined": (
+            "You are a school counselor giving advice to high school students who struggle with deadlines. "
+            "Give 5 specific and realistic time management tips students can use at home or school. "
+            "Each tip should be 1-2 sentences and written in a friendly, encouraging tone."
+        )
+    }
 ]
 
 with open("ai_回答.txt", "w", encoding="utf-8") as f:
-    for i, question in enumerate(questions, start=1):
-        response = openai.ChatCompletion.create(
+    for i, item in enumerate(prompts, start=1):
+        f.write(f"=== Prompt {i}: {item['title']} ===\n\n")
+        
+        response_initial = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": question}]
+            messages=[{"role": "user", "content": item["initial"]}]
         )
-        answer = response['choices'][0]['message']['content']
-        f.write(f"問題 {i}：\n{question}\n\n")
-        f.write(f"AI 的回答 {i}：\n{answer}\n\n")
-        print(f"問題 {i} 已完成")
+        answer_initial = response_initial['choices'][0]['message']['content']
+        f.write("🔹 原始提示語：\n" + item["initial"] + "\n\n")
+        f.write("🔸 AI 回答（原始）：\n" + answer_initial + "\n\n")
 
-print("\n所有回答已儲存到 ai_回答.txt")
+        response_refined = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": item["refined"]}]
+        )
+        answer_refined = response_refined['choices'][0]['message']['content']
+        f.write("🔹 改進後提示語：\n" + item["refined"] + "\n\n")
+        f.write("🔸 AI 回答（改進後）：\n" + answer_refined + "\n\n")
+        f.write("=" * 60 + "\n\n")
 
-Compared to the original vague prompt, I improved it by using a clear essay title, such as focusing only on how AI affects humans. I also asked the AI to write from the point of view of a high school student, which helped make the style more natural. 
-In addition, I set a word limit to guide the length and asked for at least two examples. These changes gave the AI a better idea of what I wanted, and the answer about global warming became more detailed, organized, and easier to understand.
+print("所有提示語已完成並儲存到 ai_回答.txt")
+
+# Prompt Engineering 練習報告：AI 回應優化實驗
+
+這份報告是我用三個原本很模糊的問題，去試著修改提示語，讓 AI 回答得更有內容。我用了一些技巧，像是設定角色、舉例子、限制字數，最後觀察回答有什麼變化。
+
+---
+
+## 提示語與改進版本
+
+| 主題           | 原始提示語                         | 改進後提示語 |
+|----------------|----------------------------------|-------------------------------------------------------------|
+| AI 對人類的影響   | Write an article about AI.         | Write a 300-word essay as a high school student about how AI affects human life. Use two specific examples and keep the language simple and clear. |
+| 全球暖化         | Explain global warming.            | Pretend you are a student writing a 250-word report about global warming. Explain what it is, why it happens, and give two real-life effects with simple explanations. |
+| 時間管理建議     | Give me time management tips.      | You are a high school counselor. Give 5 simple and realistic time management tips for students who often miss deadlines. Explain each tip in 1-2 sentences. |
+
+---
+
+## 使用的技巧
+
+- 角色設定：我讓 AI 假裝是高中生或輔導老師，這樣它的語氣會比較像人。
+- 加入限制：有些提示我有設字數或是要求回答幾點，這樣內容不會太長或太少。
+- 結構提示：我有直接在提示中說明要講定義、原因和例子，幫助 AI 組織內容。
+- 舉例要求：每題我都請 AI 至少舉兩個例子，讓回答更具體。
+- 用詞簡單：我有說明要用簡單、學生看得懂的語言，不要太學術或太難。
+
+---
+
+## 優化過程與觀察
+
+### AI 對人類的影響  
+一開始的提示太簡單，AI 的回答就是在解釋 AI 是什麼。後來我加入角色、字數和例子，它的回答變得比較像學生作文，而且有提到醫療和教育的例子，更清楚也比較有內容。
+
+### 全球暖化  
+原本 AI 只簡單說了一下定義，內容很短也沒細節。改過提示後，它有講出為什麼會發生（像是溫室氣體增加），還說了冰層融化跟極端氣候的例子，回答有層次也比較好懂。
+
+### 時間管理建議  
+原本的回答太像大人在講大道理。後來我讓它扮演學校輔導老師，回答就變得比較貼近學生生活，像是「每天排出固定讀書時間」這種簡單又實用的建議，也不會讓人覺得壓力太大。
+
+---
+
+## 分析 Analysis
+
+我覺得把提示語寫得清楚真的很重要。原本的問題都太模糊，AI 也只給很普通的回答。後來我加上角色、例子、字數和語氣要求，它的回答就更貼近我要的方向。
+
+像全球暖化那題，原本只有定義，改過之後就有因果關係還加了例子。AI 那題，原本像百科介紹，改後變成一篇有內容的學生作文。時間管理那題改得最明顯，AI 原本像家長唸你，後來變成老師在幫你想辦法，語氣更溫柔也比較有用。
+
+這次練習讓我學到，只要把問題問清楚，AI 就能回答得更好。
+
+---
+
+I think it is very important to write clear prompts. The first questions were too vague, so AI gave simple answers. After I added roles, examples, word limits, and tone instructions, the answers were closer to what I wanted.
+
+For example, the global warming question only had a definition before. After changing it, it also showed cause and effect with examples. For the AI question, the answer changed from a general explanation to a more detailed student essay. The biggest change was in the time management tips. At first, AI sounded like a parent scolding, but after the change, it sounded like a helpful teacher with a softer and more useful tone.
+
+This practice taught me that if you ask clear questions, AI can give better answers.
